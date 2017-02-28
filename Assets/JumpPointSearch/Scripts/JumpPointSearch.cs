@@ -2,50 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node
-{
-	public Coord coord;
-	public Node parent;
-	public float value;
 
-	public int col { get { return coord.col; } }
-	public int row { get { return coord.row; } }
-
-	public Node(int column, int row, Node parent = null, float value = 0.0f)
-	{
-		this.coord = new Coord(column, row);
-		this.parent = parent;
-		this.value = value;
-	}
-
-	public Node(Coord coord, Node parent = null, float value = 0.0f)
-	{
-		this.coord = coord;
-		this.parent = parent;
-		this.value = value;
-	}
-
-	public static Coord Direction(Node from, Node to)
-	{
-		int x = Mathf.Clamp(to.col - from.col, -1, 1);
-		int y = Mathf.Clamp(to.row - from.row, -1, 1);
-		return new Coord(x, y);
-	}
-}
 
 [RequireComponent(typeof(MapGenerator))]
 public class JumpPointSearch : MonoBehaviour
 {
-	MapGenerator map;
-	void Start ()
+	MapGenerator cached_map;
+	void Awake()
 	{
-		map = GetComponent<MapGenerator>();
+		cached_map = GetComponent<MapGenerator>();
 	}
 
 	public void Search()
 	{
 		Node node = new Node(0, 0);
-		Coord goal = new Coord(map.grid.columns - 1, map.grid.rows - 1);
+		Coord goal = new Coord(cached_map.grid.columns - 1, cached_map.grid.rows - 1);
 		IdentifySuccessors(node, node.coord, goal);
 	}
 
@@ -92,7 +63,7 @@ public class JumpPointSearch : MonoBehaviour
 			Coord neighbourG = new Coord(node.col - 1, node.row - 1); // bottom-left
 			Coord neighbourH = new Coord(node.col + 1, node.row - 1); // bottom-right
 			if (IsWalkable(neighbourG) == true)
-				neighbours.Add(new Node(neighbourG, node, 1)); //TODO: diagonal heuristic
+				neighbours.Add(new Node(neighbourG, node, 1)); //TODO: diagonal cost
 			if (IsWalkable(neighbourH) == true)
 				neighbours.Add(new Node(neighbourH, node, 1));
 			if (IsWalkable(neighbourE) == true)
@@ -105,7 +76,7 @@ public class JumpPointSearch : MonoBehaviour
 			Coord current = node.coord;
 			Coord direction = Node.Direction(node.parent, node);
 			Coord neighbourA = current + direction;
-			float heuristic = node.value + 1; //TODO: diagonal
+			float heuristic = node.score + 1; //TODO: diagonal
 
 			// horizontal / vertical
 			if (Coord.IsDiagonal(direction) == false)
@@ -169,7 +140,7 @@ public class JumpPointSearch : MonoBehaviour
 	//12: return jump(n, ~d, s, g)
 	public Node Jump(Node current, Coord direction, Coord start, Coord goal)
 	{
-		float heuristic = current.value + 1; //TODO: diagonal
+		float heuristic = current.score + 1; //TODO: diagonal
 		Node next = new Node(current.coord + direction, current, heuristic);
 		if (IsWalkable(next.coord) == false)
 			return null;
@@ -233,12 +204,12 @@ public class JumpPointSearch : MonoBehaviour
 
 	public MapTile GetTile(Coord coord)
 	{
-		if (coord.col < 0 || coord.col >= map.grid.columns)
+		if (coord.col < 0 || coord.col >= cached_map.grid.columns)
 			return null;
-		if (coord.row < 0 || coord.row >= map.grid.rows)
+		if (coord.row < 0 || coord.row >= cached_map.grid.rows)
 			return null;
 
-		return map.grid.Get(coord.col, coord.row);
+		return cached_map.grid.Get(coord.col, coord.row);
 	}
 
 	public bool IsWalkable(Coord coord)
