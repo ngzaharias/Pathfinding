@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 49f25301d54797e4ab7a16bac9a3e357
+timeCreated: 1487151169
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - map: {fileID: 4900000, guid: 7c479855aae2b3448862adc9e3aa71cd, type: 3}
+  - prefab: {fileID: 114396628239081112, guid: 0407afa5b8b4be94788b0579c6f8bf9f, type: 2}
+  - valid: {fileID: 2100000, guid: 400140765882c84449fbcb8945f4ea82, type: 2}
+  - invalid: {fileID: 2100000, guid: 3c1865af6014cf343ad11bbdd4f84aef, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
